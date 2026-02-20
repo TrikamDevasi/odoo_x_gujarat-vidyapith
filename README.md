@@ -1,0 +1,1 @@
+# odoo_x_gujarat-vidyapith
