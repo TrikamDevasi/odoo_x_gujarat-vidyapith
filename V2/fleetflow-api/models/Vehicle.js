@@ -15,4 +15,4 @@ const vehicleSchema = new mongoose.Schema({
     acquisition_cost: { type: Number, default: 0, min: 0 },
 }, { timestamps: true });
 
-module.exports = mongoose.model('Vehicle', vehicleSchema);
+module.exports = mongoose.models.Vehicle || mongoose.model('Vehicle', vehicleSchema);

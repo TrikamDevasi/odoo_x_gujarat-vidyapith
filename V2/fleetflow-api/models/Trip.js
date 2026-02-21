@@ -27,4 +27,4 @@ tripSchema.pre('save', async function (next) {
     next();
 });
 
-module.exports = mongoose.model('Trip', tripSchema);
+module.exports = mongoose.models.Trip || mongoose.model('Trip', tripSchema);

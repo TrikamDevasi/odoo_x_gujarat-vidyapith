@@ -9,21 +9,41 @@ const app = express();
 connectDB();
 
 // ─── Middleware ─────────────────────────────────────────────
+const allowedOrigins = [
+    process.env.CLIENT_ORIGIN,
+    'http://localhost:3000',
+    'http://localhost:5173',
+    'http://localhost:4000'
+].filter(Boolean);
+
 app.use(cors({
     origin: (origin, callback) => {
-        // Allow requests with no origin (Postman, curl, same-origin SSR)
+        // Allow requests with no origin (like mobile apps or curl)
         if (!origin) return callback(null, true);
-        // Allow any localhost port in development
-        if (/^http:\/\/localhost:\d+$/.test(origin)) return callback(null, true);
-        // In production, only allow the configured CLIENT_ORIGIN
-        if (origin === process.env.CLIENT_ORIGIN) return callback(null, true);
-        callback(new Error(`CORS blocked: ${origin}`));
+
+        // Check if origin is in our whitelist or is a vercel.app subdomain
+        const isAllowed = allowedOrigins.includes(origin) ||
+            origin.endsWith('.vercel.app') ||
+            /^http:\/\/localhost:\d+$/.test(origin);
+
+        if (isAllowed) {
+            callback(null, true);
+        } else {
+            console.error('CORS blocked origin:', origin);
+            callback(new Error('Not allowed by CORS'));
+        }
     },
     credentials: true,
+    methods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS'],
+    allowedHeaders: ['Content-Type', 'Authorization']
 }));
 app.use(express.json());
 
 // ─── Health Check ───────────────────────────────────────────
+app.get('/', (_req, res) => {
+    res.json({ message: 'FleetFlow API is running!', health: '/health' });
+});
+
 app.get('/health', (_req, res) => {
     res.json({ status: 'ok', db: 'mongodb', timestamp: new Date().toISOString() });
 });
@@ -48,9 +68,12 @@ app.use((err, _req, res, _next) => {
     res.status(500).json({ error: 'Internal server error.' });
 });
 
-// ─── Start Server ───────────────────────────────────────────
-const PORT = process.env.PORT || 4000;
-app.listen(PORT, () => {
-    console.log(`🚚 FleetFlow API running on http://localhost:${PORT}`);
-    console.log(`   Health check: http://localhost:${PORT}/health`);
-});
+// ─── Export/Start Server ──────────────────────────────────
+if (process.env.NODE_ENV !== 'production' || !process.env.VERCEL) {
+    const PORT = process.env.PORT || 4000;
+    app.listen(PORT, () => {
+        console.log(`🚚 FleetFlow API running on http://localhost:${PORT}`);
+    });
+}
+
+module.exports = app;

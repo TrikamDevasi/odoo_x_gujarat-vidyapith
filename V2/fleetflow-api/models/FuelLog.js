@@ -17,4 +17,4 @@ fuelLogSchema.virtual('cost_per_liter').get(function () {
 fuelLogSchema.set('toJSON', { virtuals: true });
 fuelLogSchema.set('toObject', { virtuals: true });
 
-module.exports = mongoose.model('FuelLog', fuelLogSchema);
+module.exports = mongoose.models.FuelLog || mongoose.model('FuelLog', fuelLogSchema);
