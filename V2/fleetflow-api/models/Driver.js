@@ -24,4 +24,4 @@ driverSchema.virtual('is_license_expired').get(function () {
 driverSchema.set('toJSON', { virtuals: true });
 driverSchema.set('toObject', { virtuals: true });
 
-module.exports = mongoose.model('Driver', driverSchema);
+module.exports = mongoose.models.Driver || mongoose.model('Driver', driverSchema);
