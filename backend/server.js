@@ -13,14 +13,24 @@ const dashboardRoutes = require('./routes/dashboard');
 
 const app = express();
 
-app.use(cors());
+// CORS configuration - allowing local dev and prepared for production
+app.use(cors({
+    origin: process.env.FRONTEND_URL || 'http://localhost:5173',
+    methods: ['GET', 'POST', 'PUT', 'DELETE'],
+    credentials: true
+}));
+
 app.use(express.json());
 
-const MONGODB_URI = 'mongodb://localhost:27017/fleetflow';
+const MONGODB_URI = process.env.MONGODB_URI || 'mongodb://localhost:27017/fleetflow';
 
 mongoose.connect(MONGODB_URI)
     .then(() => console.log('✅ Connected to MongoDB'))
     .catch(err => console.error('❌ MongoDB connection error:', err));
+
+app.get('/', (req, res) => {
+    res.send('FleetFlow Backend API is LIVE! Access endpoints via /api');
+});
 
 app.get('/api/test', (req, res) => {
     res.json({ message: 'FleetFlow backend is working!' });
