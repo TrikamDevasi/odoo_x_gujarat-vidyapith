@@ -39,6 +39,16 @@ const tripService = {
             console.error('API Error:', error.response || error);
             throw error.response?.data || { message: 'Failed to cancel trip' };
         }
+    },
+
+    dispatch: async (id) => {
+        try {
+            const response = await API.put(`/trips/${id}/dispatch`, {});
+            return response.data;
+        } catch (error) {
+            console.error('API Error:', error.response || error);
+            throw error.response?.data || { message: 'Failed to dispatch trip' };
+        }
     }
 };
 

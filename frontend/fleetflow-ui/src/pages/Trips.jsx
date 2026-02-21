@@ -125,11 +125,6 @@ export default function Trips() {
         }
     };
 
-    const handleDispatch = async (tripId) => {
-        // In your backend, trips are created as 'Dispatched' directly
-        // This might just refresh the data
-        fetchAllData();
-    };
 
     const handleComplete = async (tripId) => {
         const odometer = prompt('Enter final odometer reading:');
@@ -138,8 +133,22 @@ export default function Trips() {
         try {
             await tripService.complete(tripId, Number(odometer));
             fetchAllData(); // Refresh all data
+            setError('');
         } catch (err) {
-            setError('Failed to complete trip');
+            setError('Failed to complete trip: ' + (err.message || 'Server error'));
+            console.error(err);
+        }
+    };
+
+    const handleDispatch = async (tripId) => {
+        if (!window.confirm('Dispatch this trip? Only available vehicles and drivers on-duty can be dispatched.')) return;
+
+        try {
+            await tripService.dispatch(tripId);
+            fetchAllData();
+            setError('');
+        } catch (err) {
+            setError('Failed to dispatch trip: ' + (err.message || 'Server error'));
             console.error(err);
         }
     };
@@ -187,20 +196,33 @@ export default function Trips() {
     };
 
     const KanbanCard = ({ trip }) => {
-        const vehicle = vehicles.find(v => v._id === trip.vehicle_id || v.id === trip.vehicle_id);
-        const driver = drivers.find(d => d._id === trip.driver_id || d.id === trip.driver_id);
-
         return (
             <div className="kanban-card">
-                <div className="kanban-card-ref">Trip #{trip._id?.slice(-6) || trip.id}</div>
+                <div className="kanban-card-ref">Trip #{trip._id?.slice(-6) || trip.id?.slice(-6) || 'N/A'}</div>
                 <div className="kanban-card-route">{trip.start_location} → {trip.end_location}</div>
                 <div className="kanban-card-meta">
-                    <span>🚛 {vehicle?.name || 'Unknown'}</span>
-                    <span>👤 {driver?.name || 'Unknown'}</span>
+                    <span>🚛 {getVehicleName(trip.vehicle_id)}</span>
+                    <span>👤 {getDriverName(trip.driver_id)}</span>
                     <span>📦 {trip.cargo_weight} kg</span>
                     {trip.start_time && <span>📅 {new Date(trip.start_time).toLocaleDateString()}</span>}
                 </div>
                 <div className="kanban-card-actions">
+                    {trip.status === 'Draft' && (
+                        <>
+                            <button
+                                className="btn btn-primary btn-sm"
+                                onClick={() => handleDispatch(trip._id || trip.id)}
+                            >
+                                Dispatch
+                            </button>
+                            <button
+                                className="btn btn-secondary btn-sm"
+                                onClick={() => handleCancel(trip._id || trip.id)}
+                            >
+                                Cancel
+                            </button>
+                        </>
+                    )}
                     {trip.status === 'Dispatched' && (
                         <>
                             <button
