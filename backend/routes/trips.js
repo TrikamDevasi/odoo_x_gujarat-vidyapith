@@ -154,4 +154,54 @@ router.put('/:id/cancel', async (req, res) => {
     }
 });
 
+// PUT dispatch trip
+router.put('/:id/dispatch', async (req, res) => {
+    try {
+        const trip = await Trip.findById(req.params.id);
+        if (!trip) return res.status(404).json({ error: 'Trip not found' });
+
+        if (trip.status !== 'Draft') {
+            return res.status(400).json({ error: `Cannot dispatch a trip with status: ${trip.status}` });
+        }
+
+        // Check vehicle availability
+        const vehicle = await Vehicle.findById(trip.vehicle_id);
+        if (!vehicle) return res.status(400).json({ error: 'Vehicle not found' });
+        if (vehicle.status !== 'Available') {
+            return res.status(400).json({ error: 'Vehicle is not available' });
+        }
+
+        // Check driver availability
+        const driver = await Driver.findById(trip.driver_id);
+        if (!driver) return res.status(400).json({ error: 'Driver not found' });
+        if (driver.status !== 'On Duty') {
+            return res.status(400).json({ error: 'Driver is not on duty' });
+        }
+
+        // Check license expiry
+        const today = new Date();
+        const expiry = new Date(driver.license_expiry);
+        if (expiry <= today) {
+            return res.status(400).json({ error: 'Driver license has expired' });
+        }
+
+        // Update trip
+        trip.status = 'Dispatched';
+        trip.start_time = new Date();
+        await trip.save();
+
+        // Update vehicle and driver status
+        vehicle.status = 'On Trip';
+        await vehicle.save();
+
+        driver.status = 'On Trip';
+        await driver.save();
+
+        res.json({ success: true, trip });
+    } catch (error) {
+        res.status(400).json({ error: error.message });
+    }
+});
+
 module.exports = router;
+
