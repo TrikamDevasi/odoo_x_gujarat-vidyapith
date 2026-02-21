@@ -1,6 +1,8 @@
 import { useState, useEffect } from 'react';
+import { Plus, AlertCircle, Wrench, Search } from 'lucide-react';
 import StatusBadge from '@/components/StatusBadge';
 import Modal from '@/components/Modal';
+import SkeletonTable from '@/components/SkeletonTable';
 import maintenanceService from '../services/maintenanceService';
 import vehicleService from '../services/vehicleService';
 
@@ -37,13 +39,12 @@ export default function Maintenance() {
 
     const vehicleName = (idOrObj) => {
         // Handle if populated as object
-        if (idOrObj && typeof idOrObj === 'object') {
-            return idOrObj.name || `Vehicle #${idOrObj._id || idOrObj.id}`;
-        }
+        if (idOrObj && typeof idOrObj === 'object' && idOrObj.name) return idOrObj.name;
 
         // Fallback to searching in vehicles list
-        const v = vehicles.find(v => v._id === idOrObj || v.id === idOrObj);
-        return v ? v.name : `Vehicle #${idOrObj}`;
+        const idStr = String(idOrObj?._id || idOrObj?.id || idOrObj);
+        const v = vehicles.find(v => String(v._id || v.id) === idStr);
+        return v ? v.name : `Vehicle #${idStr.slice(-6)}`;
     };
 
     const handleSave = async () => {
@@ -100,29 +101,29 @@ export default function Maintenance() {
         return new Date(m.service_date) > thirtyDaysAgo;
     }).length;
 
-    if (loading) {
-        return <div className="loading">Loading maintenance records...</div>;
-    }
+    if (loading) return <SkeletonTable rows={10} cols={6} />;
 
     return (
         <div className="fade-in">
             <div className="page-header">
                 <div>
-                    <div className="page-title">Maintenance Logs</div>
-                    <div className="page-sub">{recentCount} in last 30 days · ${totalCost.toLocaleString()} total cost</div>
+                    <h1 className="page-title">Maintenance Logs</h1>
+                    <p style={{ color: 'var(--text-secondary)', marginTop: '4px' }}>{recentCount} in last 30 days · ${totalCost.toLocaleString()} total cost</p>
                 </div>
-                <button className="btn btn-primary" onClick={() => { setForm(EMPTY); setModal(true); }}>+ Log Service</button>
+                <button className="btn btn-primary" onClick={() => { setForm(EMPTY); setModal(true); }}>
+                    <Plus size={18} style={{ marginRight: '8px' }} /> Log Service
+                </button>
             </div>
 
             {error && (
-                <div className="alert alert-danger" style={{ marginBottom: 16 }}>
-                    {error}
+                <div className="alert alert-danger pulse">
+                    <AlertCircle size={18} /> {error}
                 </div>
             )}
 
             <div className="table-wrapper">
                 <div className="table-toolbar">
-                    <span className="table-toolbar-title">Service Records ({filtered.length})</span>
+                    <h3 className="table-toolbar-title">Service Records ({filtered.length})</h3>
                     <div className="search-wrap">
                         <span className="search-icon">🔍</span>
                         <input
@@ -179,8 +180,9 @@ export default function Maintenance() {
                         </>
                     }
                 >
-                    <div className="alert alert-warning mb-4" style={{ marginBottom: 16 }}>
-                        ⚠ Adding a service record will automatically set the vehicle status to <strong>In Shop</strong>.
+                    <div className="alert alert-warning">
+                        <AlertCircle size={18} />
+                        <span>Adding a service record will automatically set the vehicle status to <strong>In Shop</strong>.</span>
                     </div>
                     <div className="form-grid">
                         <div className="form-group form-grid-full">

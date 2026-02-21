@@ -1,39 +1,78 @@
 import { useState, useEffect } from 'react';
-import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
-import { FleetProvider } from '@/context/FleetContext';
+import { BrowserRouter, Routes, Route, Navigate, useNavigate, useLocation } from 'react-router-dom';
+import {
+  BarChart3,
+  Map,
+  Truck,
+  Fuel,
+  LayoutDashboard,
+  ShieldCheck
+} from 'lucide-react';
 import Sidebar from '@/components/Sidebar';
-import Login from '@/pages/Login';
-import Register from '@/pages/Register';
 import Dashboard from '@/pages/Dashboard';
 import Vehicles from '@/pages/Vehicles';
 import Drivers from '@/pages/Drivers';
 import Trips from '@/pages/Trips';
-import Maintenance from '@/pages/Maintenance';
 import FuelLogs from '@/pages/FuelLogs';
+import Maintenance from '@/pages/Maintenance';
 import Analytics from '@/pages/Analytics';
-import authService from '@/services/authService';
+import Login from '@/pages/Login';
+import authService from './services/authService';
+import { AnimatedThemeToggler } from '@/components/AnimatedThemeToggler';
+import ToastContainer from '@/components/ToastContainer';
+import CommandPalette from '@/components/CommandPalette';
+import QuickActionFAB from '@/components/QuickActionFAB';
+import { FleetProvider } from '@/context/FleetContext';
 
 const PAGE_TITLES = {
-  '/dashboard': { title: 'Command Center', sub: 'Real-time fleet overview' },
-  '/vehicles': { title: 'Vehicle Registry', sub: 'Manage your fleet assets' },
-  '/drivers': { title: 'Driver Profiles', sub: 'Compliance & performance tracking' },
-  '/trips': { title: 'Trip Dispatcher', sub: 'Manage deliveries and routes' },
-  '/maintenance': { title: 'Maintenance Logs', sub: 'Service history and scheduling' },
-  '/fuel': { title: 'Fuel & Expense Logs', sub: 'Operational cost tracking' },
-  '/analytics': { title: 'Analytics & Reports', sub: 'Data-driven fleet insights' },
+  '/dashboard': { title: 'Dashboard' },
+  '/vehicles': { title: 'Fleet Registry' },
+  '/drivers': { title: 'Personnel Management' },
+  '/trips': { title: 'Operations Feed' },
+  '/maintenance': { title: 'System Diagnostics' },
+  '/fuel': { title: 'Asset Expenses' },
+  '/analytics': { title: 'Strategic Insights' },
 };
 
 const ProtectedRoute = ({ children, allowedRoles, user }) => {
-  if (!user) return <Navigate to="/" />;
+  if (!user) return <Navigate to="/login" />;
   if (allowedRoles && !allowedRoles.includes(user.role)) {
     return <Navigate to="/dashboard" />;
   }
   return children;
 };
 
+function MobileNav({ path }) {
+  const navigate = useNavigate();
+  const items = [
+    { label: 'Dash', icon: <LayoutDashboard size={20} />, path: '/dashboard' },
+    { label: 'Trips', icon: <Map size={20} />, path: '/trips' },
+    { label: 'Fleet', icon: <Truck size={20} />, path: '/vehicles' },
+    { label: 'Fuel', icon: <Fuel size={20} />, path: '/fuel' },
+  ];
+
+  return (
+    <div className="mobile-nav">
+      {items.map((item) => (
+        <button
+          key={item.path}
+          className={`mobile-nav-item${path === item.path ? ' active' : ''}`}
+          onClick={() => navigate(item.path)}
+        >
+          <span className="mobile-nav-icon">{item.icon}</span>
+          <span>{item.label}</span>
+        </button>
+      ))}
+    </div>
+  );
+}
+
 function AppShell({ user, onLogout, theme, toggleTheme }) {
-  const path = window.location.pathname;
-  const meta = PAGE_TITLES[path] || {};
+  const location = useLocation();
+  const path = location.pathname;
+  const navigate = useNavigate();
+
+  const meta = PAGE_TITLES[path] || { title: 'FleetFlow' };
 
   const handleLogout = () => {
     authService.logout();
@@ -45,70 +84,53 @@ function AppShell({ user, onLogout, theme, toggleTheme }) {
       <Sidebar user={user} onLogout={handleLogout} />
       <div className="app-main">
         <header className="header">
-          <div>
+          <div style={{ flex: 1 }}>
             <div className="header-title">{meta.title}</div>
-            <div className="header-subtitle">{meta.sub}</div>
           </div>
-          <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
-            {/* Theme toggle */}
-            <button
-              onClick={toggleTheme}
-              title={theme === 'dark' ? 'Switch to Light Mode' : 'Switch to Dark Mode'}
-              style={{
-                background: 'var(--bg-hover)',
-                border: '1px solid var(--border)',
-                borderRadius: 8,
-                padding: '5px 10px',
-                fontSize: 16,
-                cursor: 'pointer',
-                color: 'var(--text-primary)',
-                transition: 'all 0.2s ease',
-                display: 'flex',
-                alignItems: 'center',
-                gap: 6,
-              }}
-            >
-              {theme === 'dark' ? '☀️' : '🌙'}
-              <span style={{ fontSize: 11, color: 'var(--text-muted)' }}>
-                {theme === 'dark' ? 'Light' : 'Dark'}
-              </span>
-            </button>
+          <div style={{ display: 'flex', alignItems: 'center', gap: 20 }}>
+            <AnimatedThemeToggler theme={theme} toggleTheme={toggleTheme} />
 
-            <span style={{
-              fontSize: 11,
-              color: 'var(--text-muted)',
+            <div style={{
+              fontSize: 12,
+              fontWeight: 600,
+              color: 'var(--text-secondary)',
               background: 'var(--bg-hover)',
-              padding: '4px 10px',
+              padding: '6px 12px',
               borderRadius: 6,
               border: '1px solid var(--border)',
             }}>
-              {user?.role || 'User'}
-            </span>
+              {user?.role}
+            </div>
           </div>
         </header>
-        <main className="page-content">
-          <div className="animate-in">
-            <Routes>
-              <Route path="/dashboard" element={<Dashboard />} />
-              <Route path="/vehicles" element={<Vehicles />} />
-              <Route path="/drivers" element={<Drivers />} />
-              <Route path="/trips" element={<Trips />} />
-              <Route path="/maintenance" element={<Maintenance />} />
-              <Route path="/fuel" element={
-                <ProtectedRoute allowedRoles={['Fleet Manager', 'Finance Admin', 'Dispatcher']} user={user}>
-                  <FuelLogs />
-                </ProtectedRoute>
-              } />
-              <Route path="/analytics" element={
-                <ProtectedRoute allowedRoles={['Fleet Manager']} user={user}>
-                  <Analytics />
-                </ProtectedRoute>
-              } />
-              <Route path="*" element={<Navigate to="/dashboard" />} />
-            </Routes>
-          </div>
+        <main className="page-content fade-in" key={path}>
+          <Routes>
+            <Route path="/dashboard" element={<Dashboard />} />
+            <Route path="/vehicles" element={<Vehicles />} />
+            <Route path="/drivers" element={<Drivers />} />
+            <Route path="/trips" element={<Trips />} />
+            <Route path="/maintenance" element={<Maintenance />} />
+            <Route path="/fuel" element={
+              <ProtectedRoute allowedRoles={['Fleet Manager', 'Finance Admin', 'Dispatcher']} user={user}>
+                <FuelLogs />
+              </ProtectedRoute>
+            } />
+            <Route path="/analytics" element={
+              <ProtectedRoute allowedRoles={['Fleet Manager']} user={user}>
+                <Analytics />
+              </ProtectedRoute>
+            } />
+            <Route path="*" element={<Navigate to="/dashboard" />} />
+          </Routes>
         </main>
       </div>
+
+      {/* Mobile Navigation */}
+      <MobileNav path={path} />
+
+      {/* Global Interactive Components */}
+      <CommandPalette />
+      <QuickActionFAB />
     </div>
   );
 }
@@ -116,70 +138,47 @@ function AppShell({ user, onLogout, theme, toggleTheme }) {
 export default function App() {
   const [user, setUser] = useState(null);
   const [loading, setLoading] = useState(true);
-  const [theme, setTheme] = useState(
-    () => localStorage.getItem('ff-theme') || 'dark'
-  );
+  const [theme, setTheme] = useState(() => localStorage.getItem('theme') || 'light');
 
-  // Check for existing session on app load
   useEffect(() => {
-    const checkAuth = () => {
-      const currentUser = authService.getCurrentUser();
-      if (currentUser) {
-        setUser(currentUser);
-      }
-      setLoading(false);
-    };
-
-    checkAuth();
+    const savedUser = authService.getCurrentUser();
+    if (savedUser) setUser(savedUser);
+    setLoading(false);
   }, []);
 
-  // Apply theme to <html> so all CSS variables switch automatically
   useEffect(() => {
     document.documentElement.setAttribute('data-theme', theme);
-    localStorage.setItem('ff-theme', theme);
+    localStorage.setItem('theme', theme);
   }, [theme]);
 
-  const toggleTheme = () => setTheme(t => t === 'dark' ? 'light' : 'dark');
-
-  const handleLogin = (userData) => {
-    setUser(userData);
+  const toggleTheme = () => {
+    setTheme(prev => (prev === 'light' ? 'dark' : 'light'));
   };
 
-  if (loading) {
-    return (
-      <div style={{
-        display: 'flex',
-        justifyContent: 'center',
-        alignItems: 'center',
-        height: '100vh',
-        background: 'var(--bg-primary)',
-        color: 'var(--text-primary)'
-      }}>
-        <div style={{ textAlign: 'center' }}>
-          <h2>FleetFlow</h2>
-          <p>Loading...</p>
-        </div>
-      </div>
-    );
-  }
+  if (loading) return null;
 
   return (
     <FleetProvider>
-      <BrowserRouter>
-        {user ? (
-          <AppShell
-            user={user}
-            onLogout={() => setUser(null)}
-            theme={theme}
-            toggleTheme={toggleTheme}
-          />
-        ) : (
+      <div className="fleetflow-root">
+        <ToastContainer />
+        <BrowserRouter>
           <Routes>
-            <Route path="/register" element={<Register />} />
-            <Route path="*" element={<Login onLogin={handleLogin} />} />
+            <Route path="/login" element={
+              user ? <Navigate to="/dashboard" /> : <Login onLogin={setUser} />
+            } />
+            <Route path="/*" element={
+              user ? (
+                <AppShell
+                  user={user}
+                  onLogout={() => setUser(null)}
+                  theme={theme}
+                  toggleTheme={toggleTheme}
+                />
+              ) : <Navigate to="/login" />
+            } />
           </Routes>
-        )}
-      </BrowserRouter>
+        </BrowserRouter>
+      </div>
     </FleetProvider>
   );
 }
