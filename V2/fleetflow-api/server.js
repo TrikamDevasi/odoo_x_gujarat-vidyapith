@@ -15,21 +15,17 @@ const allowedOrigins = [
 
 app.use(cors({
     origin: (origin, callback) => {
-        // Allow requests with no origin (like mobile apps, curl, or server-to-server)
         if (!origin) return callback(null, true);
 
-        // More robust check for allowed origins
-        const isAllowed = allowedOrigins.includes(origin) ||
-            /\.vercel\.app$/.test(origin) ||          // Matches any vercel.app subdomain
-            /^http:\/\/localhost:\d+$/.test(origin); // Matches localhost with any port
+        const isAllowed =
+            allowedOrigins.includes(origin) ||
+            /\.vercel\.app$/.test(origin) ||
+            /^http:\/\/localhost:\d+$/.test(origin);
 
         if (isAllowed) {
             callback(null, true);
         } else {
             console.error('CORS blocked origin:', origin);
-            // Instead of error, we can technically callback(null, false) 
-            // but the library behavior is safer with callback(null, true) 
-            // if we want to debug, or we can just allow it if it's a known pattern.
             callback(new Error('Not allowed by CORS'));
         }
     },
@@ -37,7 +33,21 @@ app.use(cors({
     methods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS'],
     allowedHeaders: ['Content-Type', 'Authorization', 'X-Requested-With']
 }));
+
+app.options('*', cors()); // ✅ Handle preflight for ALL routes
+
 app.use(express.json());
+
+// ─── DB Middleware (per-request connection for serverless) ───
+app.use(async (req, res, next) => {
+    try {
+        await connectDB();
+        next();
+    } catch (err) {
+        console.error('DB connection failed:', err);
+        return res.status(503).json({ error: 'Database unavailable. Please try again.' });
+    }
+});
 
 // ─── Health Check ───────────────────────────────────────────
 app.get('/', (_req, res) => {
@@ -54,13 +64,13 @@ app.get('/health', (_req, res) => {
 });
 
 // ─── Routes ─────────────────────────────────────────────────
-app.use('/api/auth', require('./routes/auth'));
-app.use('/api/vehicles', require('./routes/vehicles'));
-app.use('/api/drivers', require('./routes/drivers'));
-app.use('/api/trips', require('./routes/trips'));
+app.use('/api/auth',        require('./routes/auth'));
+app.use('/api/vehicles',    require('./routes/vehicles'));
+app.use('/api/drivers',     require('./routes/drivers'));
+app.use('/api/trips',       require('./routes/trips'));
 app.use('/api/maintenance', require('./routes/maintenance'));
-app.use('/api/fuel-logs', require('./routes/fuel'));
-app.use('/api/analytics', require('./routes/analytics'));
+app.use('/api/fuel-logs',   require('./routes/fuel'));
+app.use('/api/analytics',   require('./routes/analytics'));
 
 // ─── 404 Handler ────────────────────────────────────────────
 app.use((_req, res) => {
@@ -85,8 +95,8 @@ async function startServer() {
             });
         }
     } catch (err) {
-        console.error('❌ Failed to start server:', err);
-        process.exit(1);
+        console.error('❌ Failed to connect to DB on startup:', err.message);
+        // ✅ No process.exit(1) — app stays alive, DB middleware handles retries
     }
 }
 
