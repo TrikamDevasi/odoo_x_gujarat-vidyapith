@@ -15,8 +15,8 @@ router.get('/', async (req, res) => {
 // POST create new vehicle
 router.post('/', async (req, res) => {
     try {
-        const vehicle = new Vehicle(req.body);
-        await vehicle.save();
+        const vehicle = new Vehicle(req.body);  // Create new Vehicle document
+        await vehicle.save();                    // Save to MongoDB
         res.status(201).json(vehicle);
     } catch (error) {
         res.status(400).json({ error: error.message });
@@ -43,6 +43,36 @@ router.delete('/:id', async (req, res) => {
     try {
         await Vehicle.findByIdAndDelete(req.params.id);
         res.json({ success: true });
+    } catch (error) {
+        res.status(400).json({ error: error.message });
+    }
+});
+
+// PUT update vehicle
+router.put('/:id', async (req, res) => {
+    try {
+        const vehicle = await Vehicle.findByIdAndUpdate(
+            req.params.id,
+            req.body,
+            { new: true }
+        );
+        if (!vehicle) return res.status(404).json({ error: 'Vehicle not found' });
+        res.json(vehicle);
+    } catch (error) {
+        res.status(400).json({ error: error.message });
+    }
+});
+
+// PUT update vehicle status
+router.put('/:id/status', async (req, res) => {
+    try {
+        const { status } = req.body;
+        const vehicle = await Vehicle.findByIdAndUpdate(
+            req.params.id,
+            { status: status },
+            { new: true }
+        );
+        res.json(vehicle);
     } catch (error) {
         res.status(400).json({ error: error.message });
     }
