@@ -5,9 +5,6 @@ const connectDB = require('./db/connect');
 
 const app = express();
 
-// ─── Connect to MongoDB ─────────────────────────────────────
-connectDB();
-
 // ─── Middleware ─────────────────────────────────────────────
 const allowedOrigins = [
     process.env.CLIENT_ORIGIN,
@@ -68,12 +65,23 @@ app.use((err, _req, res, _next) => {
     res.status(500).json({ error: 'Internal server error.' });
 });
 
-// ─── Export/Start Server ──────────────────────────────────
-if (process.env.NODE_ENV !== 'production' || !process.env.VERCEL) {
-    const PORT = process.env.PORT || 4000;
-    app.listen(PORT, () => {
-        console.log(`🚚 FleetFlow API running on http://localhost:${PORT}`);
-    });
+// ─── Start Server ───────────────────────────────────────────
+async function startServer() {
+    try {
+        await connectDB();
+
+        if (process.env.NODE_ENV !== 'production' || !process.env.VERCEL) {
+            const PORT = process.env.PORT || 4000;
+            app.listen(PORT, () => {
+                console.log(`🚚 FleetFlow API running on http://localhost:${PORT}`);
+            });
+        }
+    } catch (err) {
+        console.error('❌ Failed to start server:', err);
+        process.exit(1);
+    }
 }
+
+startServer();
 
 module.exports = app;
