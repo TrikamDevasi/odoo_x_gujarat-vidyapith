@@ -1,6 +1,5 @@
 const mongoose = require('mongoose');
 
-// Define the schema for vehicles
 const vehicleSchema = new mongoose.Schema({
     name: {
         type: String,
@@ -13,7 +12,7 @@ const vehicleSchema = new mongoose.Schema({
     license_plate: {
         type: String,
         required: true,
-        unique: true  // No duplicate license plates
+        unique: true  
     },
     max_load: {
         type: Number,
@@ -29,8 +28,7 @@ const vehicleSchema = new mongoose.Schema({
         default: 'Available'
     }
 }, {
-    timestamps: true  // Automatically add createdAt and updatedAt
+    timestamps: true  
 });
 
-// Create and export the model
 module.exports = mongoose.model('Vehicle', vehicleSchema);
