@@ -603,7 +603,7 @@ export default function Drivers() {
                         <option value="off_duty">Off Duty</option>
                         <option value="suspended">Suspended</option>
                     </select>
-                    <button className="btn btn-primary" onClick={openAdd} aria-label="Add new driver" style={{ flex: '1 0 100%', justifyContent: 'center', marginTop: 4 }}>
+                    <button className="btn btn-primary" onClick={openAdd} aria-label="Add new driver">
                         <Plus size={14} aria-hidden="true" /> Add Driver
                     </button>
                 </div>

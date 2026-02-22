@@ -351,7 +351,7 @@ export default function Maintenance() {
                     {' · '}₹{totalCost.toLocaleString()} total
                 </div>
                 <div className="page-actions">
-                    <button className="btn btn-primary" onClick={openModal} style={{ flex: '1 0 100%', justifyContent: 'center' }}>
+                    <button className="btn btn-primary" onClick={openModal}>
                         <Plus size={14} /> Log Service
                     </button>
                 </div>

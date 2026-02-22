@@ -487,7 +487,7 @@ export default function Vehicles() {
                             </button>
                         ))}
                     </div>
-                    <button className="btn btn-primary" onClick={openAdd} aria-label="Add new vehicle" style={{ flex: '1 0 100%', justifyContent: 'center', marginTop: 4 }}>
+                    <button className="btn btn-primary" onClick={openAdd} aria-label="Add new vehicle">
                         <Plus size={14} aria-hidden="true" /> Add Vehicle
                     </button>
                 </div>

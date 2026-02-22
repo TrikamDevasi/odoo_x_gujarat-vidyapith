@@ -566,7 +566,7 @@ export default function Trips() {
                             </button>
                         ))}
                     </div>
-                    <button className="btn btn-primary" onClick={openModal} style={{ flex: 1, justifyContent: 'center' }}>
+                    <button className="btn btn-primary" onClick={openModal}>
                         <Plus size={14} /> <span className="desktop-only">New Trip</span><span className="mobile-only">New</span>
                     </button>
                 </div>

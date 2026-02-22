@@ -312,7 +312,7 @@ export default function FuelLogs() {
                     Operational cost tracking
                 </div>
                 <div className="page-actions">
-                    <button className="btn btn-primary" onClick={openModal} style={{ flex: '1 0 100%', justifyContent: 'center' }}>
+                    <button className="btn btn-primary" onClick={openModal}>
                         <Plus size={14} /> Add Entry
                     </button>
                 </div>
