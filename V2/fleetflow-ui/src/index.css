@@ -1493,21 +1493,7 @@ code,
 
 /* Mobile sidebar overlay */
 @media (max-width: 768px) {
-  .sidebar {
-    position: fixed;
-    left: 0;
-    top: 0;
-    bottom: 0;
-    transform: translateX(-100%);
-    transition: transform var(--transition-med), box-shadow var(--transition-med);
-    z-index: 100;
-    width: 240px !important;
-  }
-
-  .sidebar.mobile-open {
-    transform: translateX(0);
-    box-shadow: 4px 0 24px rgba(0, 0, 0, 0.4);
-  }
+  /* Sidebar handled by .ff-sb */
 
   .sidebar-overlay {
     display: none;

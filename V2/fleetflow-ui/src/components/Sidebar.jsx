@@ -96,12 +96,16 @@ const CSS = `
     .ff-sb {
         position: fixed;
         left: 0; top: 0; bottom: 0;
-        width: 260px;
-        transform: translateX(-100%);
+        width: 260px !important;
+        transform: translateX(-100%) !important;
         box-shadow: 20px 0 50px rgba(0,0,0,0.5);
     }
     .ff-sb.ff-sb-mobile-open {
-        transform: translateX(0);
+        transform: translateX(0) !important;
+    }
+    /* Hide the desktop collapse toggle in mobile */
+    .ff-sb-toggle {
+        display: none !important;
     }
 }
 
