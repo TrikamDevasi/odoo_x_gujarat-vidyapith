@@ -1,4 +1,4 @@
-import { Children, cloneElement, useCallback, useEffect, useId, useRef, useState } from 'react';
+import { Children, cloneElement, useCallback, useEffect, useId, useRef, useState, memo } from 'react';
 import { createPortal } from 'react-dom';
 
 /* ─── Constants ───────────────────────────────────────────── */
@@ -149,7 +149,7 @@ function calcPosition(anchorRect, tipEl, preferredSide) {
  *   disabled    boolean — suppresses tooltip    (default false)
  *   asChild     boolean — avoids extra wrapper div (passes directly to child)
  */
-export default function Tooltip({
+function Tooltip({
     children,
     text,
     title,
@@ -355,3 +355,6 @@ export default function Tooltip({
         </>
     );
 }
+
+Tooltip.displayName = 'Tooltip';
+export default memo(Tooltip);

@@ -1,7 +1,7 @@
 import { forwardRef, useEffect } from 'react';
 import {
-    AlertTriangle, Ban, CheckCircle2, CircleX,
-    Clock, Pause, Timer, Truck, Wrench,
+  AlertTriangle, Ban, CheckCircle2, CircleX,
+  Clock, Pause, Timer, Truck, Wrench,
 } from 'lucide-react';
 
 /* ─── Constants ───────────────────────────────────────────── */
@@ -139,47 +139,47 @@ const CSS = `
 
 /* ─── Style injection ─────────────────────────────────────── */
 function injectStyles() {
-    if (typeof document === 'undefined' || document.getElementById(STYLE_ID)) return;
-    const el = document.createElement('style');
-    el.id = STYLE_ID;
-    el.textContent = CSS;
-    document.head.appendChild(el);
+  if (typeof document === 'undefined' || document.getElementById(STYLE_ID)) return;
+  const el = document.createElement('style');
+  el.id = STYLE_ID;
+  el.textContent = CSS;
+  document.head.appendChild(el);
 }
 
 /* ─── Status map ──────────────────────────────────────────── */
 export const STATUS_MAP = {
-    /* ── Vehicle ──────────────────────────────── */
-    available:    { label: 'Available',    color: 'green',  dot: true,  pulse: true  },
-    on_trip:      { label: 'On Trip',      color: 'sky',    Icon: Truck, pulse: true  },
-    in_shop:      { label: 'In Shop',      color: 'amber',  Icon: Wrench, spin: true  },
-    idle:         { label: 'Idle',         color: 'gray',   dot: true,  pulse: false  },
-    retired:      { label: 'Retired',      color: 'gray',   dot: false, strikethrough: true },
+  /* ── Vehicle ──────────────────────────────── */
+  available: { label: 'Available', color: 'green', dot: true, pulse: true },
+  on_trip: { label: 'On Trip', color: 'sky', Icon: Truck, pulse: true },
+  in_shop: { label: 'In Shop', color: 'amber', Icon: Wrench, spin: true },
+  idle: { label: 'Idle', color: 'gray', dot: true, pulse: false },
+  retired: { label: 'Retired', color: 'gray', dot: false, strikethrough: true },
 
-    /* ── Driver ───────────────────────────────── */
-    on_duty:      { label: 'On Duty',      color: 'green',  dot: true,  pulse: false  },
-    off_duty:     { label: 'Off Duty',     color: 'gray',   dot: true,  pulse: false  },
-    suspended:    { label: 'Suspended',    color: 'red',    Icon: Ban,   shake: true   },
-    expired:      { label: 'Expired',      color: 'red',    Icon: AlertTriangle, shake: true },
+  /* ── Driver ───────────────────────────────── */
+  on_duty: { label: 'On Duty', color: 'green', dot: true, pulse: false },
+  off_duty: { label: 'Off Duty', color: 'gray', dot: true, pulse: false },
+  suspended: { label: 'Suspended', color: 'red', Icon: Ban, shake: true },
+  expired: { label: 'Expired', color: 'red', Icon: AlertTriangle, shake: true },
 
-    /* ── Trip ─────────────────────────────────── */
-    draft:        { label: 'Draft',        color: 'gray',   dot: true,  pulse: false  },
-    pending:      { label: 'Pending',      color: 'amber',  Icon: Timer, pulse: false  },
-    dispatched:   { label: 'Dispatched',   color: 'blue',   dot: true,  pulse: true   },
-    in_transit:   { label: 'In Transit',   color: 'sky',    dot: true,  pulse: true   },
-    completed:    { label: 'Completed',    color: 'green',  Icon: CheckCircle2         },
-    cancelled:    { label: 'Cancelled',    color: 'red',    Icon: CircleX              },
-    overdue:      { label: 'Overdue',      color: 'orange', Icon: AlertTriangle, shake: true },
+  /* ── Trip ─────────────────────────────────── */
+  draft: { label: 'Draft', color: 'gray', dot: true, pulse: false },
+  pending: { label: 'Pending', color: 'amber', Icon: Timer, pulse: false },
+  dispatched: { label: 'Dispatched', color: 'blue', dot: true, pulse: true },
+  in_transit: { label: 'In Transit', color: 'sky', dot: true, pulse: true },
+  completed: { label: 'Completed', color: 'green', Icon: CheckCircle2 },
+  cancelled: { label: 'Cancelled', color: 'red', Icon: CircleX },
+  overdue: { label: 'Overdue', color: 'orange', Icon: AlertTriangle, shake: true },
 
-    /* ── Maintenance ──────────────────────────── */
-    scheduled:    { label: 'Scheduled',    color: 'amber',  Icon: Clock, pulse: false  },
-    in_progress:  { label: 'In Progress',  color: 'blue',   dot: true,  pulse: true   },
-    done:         { label: 'Done',         color: 'green',  Icon: CheckCircle2         },
+  /* ── Maintenance ──────────────────────────── */
+  scheduled: { label: 'Scheduled', color: 'amber', Icon: Clock, pulse: false },
+  in_progress: { label: 'In Progress', color: 'blue', dot: true, pulse: true },
+  done: { label: 'Done', color: 'green', Icon: CheckCircle2 },
 
-    /* ── Generic ──────────────────────────────── */
-    active:       { label: 'Active',       color: 'green',  dot: true,  pulse: true   },
-    inactive:     { label: 'Inactive',     color: 'gray',   dot: true,  pulse: false  },
-    paused:       { label: 'Paused',       color: 'amber',  Icon: Pause                },
-    error:        { label: 'Error',        color: 'red',    Icon: AlertTriangle, shake: true },
+  /* ── Generic ──────────────────────────────── */
+  active: { label: 'Active', color: 'green', dot: true, pulse: true },
+  inactive: { label: 'Inactive', color: 'gray', dot: true, pulse: false },
+  paused: { label: 'Paused', color: 'amber', Icon: Pause },
+  error: { label: 'Error', color: 'red', Icon: AlertTriangle, shake: true },
 };
 
 /* ─── Icon size map ───────────────────────────────────────── */
@@ -197,73 +197,76 @@ const ICON_SIZE = { xs: 9, sm: 10, md: 11, lg: 13 };
  *   className     extra class on root element              (optional)
  */
 const StatusBadge = forwardRef(function StatusBadge(
-    {
-        status,
-        variant     = 'soft',
-        size        = 'md',
-        config: configOverride,
-        noAnimation = false,
-        onClick,
-        className   = '',
-    },
-    ref
+  {
+    status,
+    variant = 'soft',
+    size = 'md',
+    config: configOverride,
+    noAnimation = false,
+    onClick,
+    className = '',
+  },
+  ref
 ) {
-    useEffect(injectStyles, []);
+  useEffect(injectStyles, []);
 
-    /* Merge: STATUS_MAP base → caller override */
-    const cfg = {
-        ...(STATUS_MAP[status] ?? {
-            label: status ?? '—',
-            color: 'gray',
-            dot:   true,
-        }),
-        ...configOverride,
-    };
+  /* Merge: STATUS_MAP base → caller override */
+  const cfg = {
+    ...(STATUS_MAP[status] ?? {
+      label: status ?? '—',
+      color: 'gray',
+      dot: true,
+    }),
+    ...configOverride,
+  };
 
-    /* ── Class assembly ───────────────────────────────────── */
-    const cls = [
-        'ff-badge',
-        `ff-badge-${size}`,
-        `ff-c-${cfg.color}`,
-        `ff-v-${variant}`,
-        !noAnimation && cfg.shake        ? 'ff-badge-shake'         : '',
-        cfg.strikethrough                ? 'ff-badge-strikethrough' : '',
-        onClick                          ? 'ff-badge-btn'           : '',
-        className,
-    ].filter(Boolean).join(' ');
+  /* ── Class assembly ───────────────────────────────────── */
+  const cls = [
+    'ff-badge',
+    `ff-badge-${size}`,
+    `ff-c-${cfg.color}`,
+    `ff-v-${variant}`,
+    !noAnimation && cfg.shake ? 'ff-badge-shake' : '',
+    cfg.strikethrough ? 'ff-badge-strikethrough' : '',
+    onClick ? 'ff-badge-btn' : '',
+    className,
+  ].filter(Boolean).join(' ');
 
-    const dotCls = [
-        'ff-badge-dot',
-        !noAnimation && cfg.pulse ? 'ff-badge-dot-pulse' : '',
-    ].filter(Boolean).join(' ');
+  const dotCls = [
+    'ff-badge-dot',
+    !noAnimation && cfg.pulse ? 'ff-badge-dot-pulse' : '',
+  ].filter(Boolean).join(' ');
 
-    const Tag      = onClick ? 'button' : 'span';
-    const iconSize = ICON_SIZE[size] ?? 11;
+  const Tag = onClick ? 'button' : 'span';
+  const iconSize = ICON_SIZE[size] ?? 11;
 
-    return (
-        <Tag
-            ref={ref}
-            className={cls}
-            onClick={onClick}
-            {...(onClick ? { type: 'button' } : {})}
-            aria-label={`Status: ${cfg.label}`}
+  return (
+    <Tag
+      ref={ref}
+      className={cls}
+      onClick={onClick}
+      {...(onClick ? { type: 'button' } : {})}
+      aria-label={`Status: ${cfg.label}`}
+    >
+      {/* Left indicator: Lucide icon OR dot OR nothing */}
+      {cfg.Icon ? (
+        <span
+          className={!noAnimation && cfg.spin ? 'ff-badge-spin-icon' : undefined}
+          aria-hidden="true"
+          style={{ display: 'inline-flex', flexShrink: 0 }}
         >
-            {/* Left indicator: Lucide icon OR dot OR nothing */}
-            {cfg.Icon ? (
-                <span
-                    className={!noAnimation && cfg.spin ? 'ff-badge-spin-icon' : undefined}
-                    aria-hidden="true"
-                    style={{ display: 'inline-flex', flexShrink: 0 }}
-                >
-                    <cfg.Icon size={iconSize} strokeWidth={2.5} />
-                </span>
-            ) : cfg.dot !== false ? (
-                <span className={dotCls} aria-hidden="true" />
-            ) : null}
+          <cfg.Icon size={iconSize} strokeWidth={2.5} />
+        </span>
+      ) : cfg.dot !== false ? (
+        <span className={dotCls} aria-hidden="true" />
+      ) : null}
 
-            {cfg.label}
-        </Tag>
-    );
+      {cfg.label}
+    </Tag>
+  );
 });
 
-export default StatusBadge;
+import { memo } from 'react';
+
+StatusBadge.displayName = 'StatusBadge';
+export default memo(StatusBadge);

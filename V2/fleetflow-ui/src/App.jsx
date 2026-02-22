@@ -1,4 +1,4 @@
-import { lazy, Suspense, useState, useEffect } from 'react';
+import { lazy, Suspense, useState, useEffect, memo } from 'react';
 import { BrowserRouter, Routes, Route, Navigate, useLocation } from 'react-router-dom';
 import { FleetProvider } from './context/FleetContext';
 import { get, clearToken } from './api';
@@ -6,6 +6,7 @@ import WelcomeModal from './components/WelcomeModal';
 import ToastContainer from './components/ToastContainer';
 import CommandPalette from './components/CommandPalette';
 import QuickActionFAB from './components/QuickActionFAB';
+import ErrorBoundary from './components/ErrorBoundary';
 import { Command, Moon, Sun, Loader2, Menu, X } from 'lucide-react';
 
 import Sidebar from './components/Sidebar';
@@ -22,7 +23,7 @@ const Analytics = lazy(() => import('./pages/Analytics'));
 const Help = lazy(() => import('./pages/Help'));
 
 /* ─── Generic Page Loading Wrapper ─────────────────────────── */
-function PageLoading() {
+const PageLoading = memo(function PageLoading() {
   return (
     <div style={{
       display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center',
@@ -34,7 +35,8 @@ function PageLoading() {
       <span style={{ fontSize: 13, fontWeight: 500, letterSpacing: '0.5px' }}>Loading workspace...</span>
     </div>
   );
-}
+});
+
 
 const PAGE_TITLES = {
   '/dashboard': { title: 'Command Center', sub: 'Real-time fleet overview' },
@@ -48,7 +50,7 @@ const PAGE_TITLES = {
 };
 
 /* ─── AppShell uses location so header updates on navigation ─── */
-function AppShell({ user, onLogout, theme, toggleTheme, onShowHelp }) {
+const AppShell = memo(function AppShell({ user, onLogout, theme, toggleTheme, onShowHelp }) {
   const location = useLocation();
   const meta = PAGE_TITLES[location.pathname] || {};
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
@@ -124,29 +126,32 @@ function AppShell({ user, onLogout, theme, toggleTheme, onShowHelp }) {
           </header>
 
           <main className="page-content fade-in">
-            <Suspense fallback={<PageLoading />}>
-              <Routes>
-                <Route path="/dashboard" element={<Dashboard />} />
-                <Route path="/vehicles" element={<Vehicles />} />
-                <Route path="/drivers" element={<Drivers />} />
-                <Route path="/trips" element={<Trips />} />
-                <Route path="/maintenance" element={<Maintenance />} />
-                <Route path="/fuel" element={<FuelLogs />} />
-                <Route path="/analytics" element={<Analytics />} />
-                <Route path="/help" element={<Help user={user} />} />
-                <Route path="*" element={<Navigate to="/dashboard" />} />
-              </Routes>
-            </Suspense>
+            <ErrorBoundary>
+              <Suspense fallback={<PageLoading />}>
+                <Routes>
+                  <Route path="/dashboard" element={<Dashboard />} />
+                  <Route path="/vehicles" element={<Vehicles />} />
+                  <Route path="/drivers" element={<Drivers />} />
+                  <Route path="/trips" element={<Trips />} />
+                  <Route path="/maintenance" element={<Maintenance />} />
+                  <Route path="/fuel" element={<FuelLogs />} />
+                  <Route path="/analytics" element={<Analytics />} />
+                  <Route path="/help" element={<Help user={user} />} />
+                  <Route path="*" element={<Navigate to="/dashboard" />} />
+                </Routes>
+              </Suspense>
+            </ErrorBoundary>
           </main>
         </div>
       </div>
 
-      {/* Global overlays rendered inside the router so useNavigate works */}
-      < CommandPalette />
-      <QuickActionFAB />
+      <ErrorBoundary>
+        <CommandPalette />
+        <QuickActionFAB />
+      </ErrorBoundary>
     </>
   );
-}
+});
 
 export default function App() {
   const [user, setUser] = useState(() => {

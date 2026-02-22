@@ -1,4 +1,4 @@
-import { useCallback, useMemo, useRef, useEffect, useState } from 'react';
+import { useCallback, useMemo, useRef, useEffect, useState, memo } from 'react';
 import { useFleet } from '../context/FleetContext';
 import StatusBadge from '../components/StatusBadge';
 import Modal from '../components/Modal';
@@ -28,7 +28,7 @@ const sid = (val) => String(val?._id ?? val ?? '');
    ════════════════════════════════════════════════════════════ */
 
 /* ── DriverAvatar ──────────────────────────────────────────── */
-function DriverAvatar({ name, size = 36, status }) {
+const DriverAvatar = memo(function DriverAvatar({ name, size = 36, status }) {
     const initials = name?.split(' ').map(w => w[0]).join('').slice(0, 2).toUpperCase() || '?';
     const statusGlow = {
         on_duty: 'rgba(34,197,94,0.5)',
@@ -51,10 +51,10 @@ function DriverAvatar({ name, size = 36, status }) {
             {initials}
         </div>
     );
-}
+});
 
 /* ── LicenseBadge ──────────────────────────────────────────── */
-function LicenseBadge({ expiry, now }) {
+const LicenseBadge = memo(function LicenseBadge({ expiry, now }) {
     if (!expiry) return <span className="text-muted">—</span>;
     const daysLeft = Math.ceil((new Date(expiry) - now) / 86400000);
 
@@ -109,10 +109,10 @@ function LicenseBadge({ expiry, now }) {
             })}
         </span>
     );
-}
+});
 
 /* ── ScoreBar ──────────────────────────────────────────────── */
-function ScoreBar({ score }) {
+const ScoreBar = memo(function ScoreBar({ score }) {
     const color = score > 80 ? 'var(--green-t)' : score > 60 ? 'var(--orange-t)' : 'var(--red-t)';
     return (
         <div aria-label={`Safety score: ${score} out of 100`} style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
@@ -130,7 +130,7 @@ function ScoreBar({ score }) {
             <span style={{ fontSize: 12, fontWeight: 600, color, minWidth: 24 }}>{score}</span>
         </div>
     );
-}
+});
 
 /* ── ScoreRing ─────────────────────────────────────────────── */
 function ScoreRing({ score }) {
@@ -192,7 +192,7 @@ function ScoreRing({ score }) {
 }
 
 /* ── StatPill ──────────────────────────────────────────────── */
-function StatPill({ icon, label, value, color = 'var(--text-secondary)' }) {
+const StatPill = memo(function StatPill({ icon, label, value, color = 'var(--text-secondary)' }) {
     return (
         <div style={{
             display: 'flex', flexDirection: 'column', alignItems: 'center',
@@ -216,10 +216,10 @@ function StatPill({ icon, label, value, color = 'var(--text-secondary)' }) {
             </span>
         </div>
     );
-}
+});
 
-/* ── AnimBar (hoisted — was re-created inside ScorecardModal) ── */
-function AnimBar({ pct, color }) {
+/* ── AnimBar ──────────────────────────────────────────────── */
+const AnimBar = memo(function AnimBar({ pct, color }) {
     const ref = useRef(null);
     useEffect(() => {
         if (!ref.current) return;
@@ -241,7 +241,7 @@ function AnimBar({ pct, color }) {
             }} />
         </div>
     );
-}
+});
 
 /* ── ScorecardModal ────────────────────────────────────────── */
 function ScorecardModal({ driver, trips, onClose }) {

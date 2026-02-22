@@ -88,7 +88,7 @@ function relTime(date) {
    ════════════════════════════════════════════════════════════ */
 
 /* ── CargoBar ───────────────────────────────────────────────── */
-function CargoBar({ weight, maxCapacity }) {
+const CargoBar = memo(function CargoBar({ weight, maxCapacity }) {
     if (!maxCapacity || !weight) return null;
     const pct = Math.min(100, Math.round((weight / maxCapacity) * 100));
     const color = pct > 85 ? '#ef4444' : pct > 70 ? '#f97316' : '#22c55e';
@@ -113,9 +113,9 @@ function CargoBar({ weight, maxCapacity }) {
             </div>
         </div>
     );
-}
+});
 
-function TripVehicleDisplay({ vehicle }) {
+const TripVehicleDisplay = memo(function TripVehicleDisplay({ vehicle }) {
     const VIcon = getVehicleIcon(vehicle?.type);
     return (
         <>
@@ -129,7 +129,7 @@ function TripVehicleDisplay({ vehicle }) {
             )}
         </>
     );
-}
+});
 
 /* ── TripCard (Memoized) ────────────────────────────────────── */
 const TripCard = memo(function TripCard({ trip, vehicleMap, loadingId, colColor }) {
@@ -260,7 +260,7 @@ const TripCard = memo(function TripCard({ trip, vehicleMap, loadingId, colColor 
 });
 
 /* ── TripActions ────────────────────────────────────────────── */
-function TripActions({ trip, dispatchTrip, completeTrip, cancelTrip }) {
+const TripActions = memo(function TripActions({ trip, dispatchTrip, completeTrip, cancelTrip }) {
     const id = sid(trip);
     const [busy, setBusy] = useState(false);
 
@@ -312,7 +312,7 @@ function TripActions({ trip, dispatchTrip, completeTrip, cancelTrip }) {
             </>)}
         </div>
     );
-}
+});
 
 /* ════════════════════════════════════════════════════════════
    MAIN COMPONENT

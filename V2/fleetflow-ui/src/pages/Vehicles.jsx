@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, memo } from 'react';
 import { useLocation } from 'react-router-dom';
 import { useFleet } from '../context/FleetContext';
 import StatusBadge from '../components/StatusBadge';
@@ -55,7 +55,8 @@ const getVehicleIcon = t => {
     return opt ? <opt.Icon size={16} /> : <Truck size={16} />;
 };
 
-function VehicleTypeBadge({ type }) {
+/* ─── VehicleTypeBadge ────────────────────────────────────── */
+const VehicleTypeBadge = memo(function VehicleTypeBadge({ type }) {
     const Icon = TYPE_OPTS.find(o => o.v === type)?.Icon ?? Truck;
     return (
         <span style={{
@@ -70,10 +71,10 @@ function VehicleTypeBadge({ type }) {
             <Icon size={12} /> {type}
         </span>
     );
-}
+});
 
 /* ─── Inline capacity bar ─────────────────────────────────── */
-function CapBar({ value, max, label = true }) {
+const CapBar = memo(function CapBar({ value, max, label = true }) {
     const pct = max > 0 ? Math.min(100, Math.round((value / max) * 100)) : 0;
     const color = pct > 90 ? '#22c55e' : pct > 60 ? '#38bdf8' : '#94a3b8';
     return (
@@ -100,10 +101,10 @@ function CapBar({ value, max, label = true }) {
             </div>
         </div>
     );
-}
+});
 
 /* ─── Vehicle Card (Grid) ─────────────────────────────────── */
-function VehicleCard({ vehicle, maxCapFleet, onEdit, onRetire }) {
+const VehicleCard = memo(function VehicleCard({ vehicle, maxCapFleet, onEdit, onRetire }) {
     const [confirmRetire, setConfirmRetire] = useState(false);
     const cap = vehicle.maxCapacity ?? vehicle.max_capacity ?? 0;
     const meta = STATUS_META[vehicle.status] ?? STATUS_META.available;
@@ -286,7 +287,7 @@ function VehicleCard({ vehicle, maxCapFleet, onEdit, onRetire }) {
             </div>
         </div>
     );
-}
+});
 
 /* ─── Modal vehicle preview ───────────────────────────────── */
 function VehiclePreview({ form }) {

@@ -1,4 +1,4 @@
-import { lazy, Suspense as ReactSuspense, useCallback, useEffect, useMemo, useState } from 'react';
+import { lazy, Suspense as ReactSuspense, useCallback, useEffect, useMemo, useState, memo } from 'react';
 import { useNavigate } from 'react-router-dom';
 const DashboardStats = lazy(() => import('../components/DashboardStats'));
 import { useFleet } from '../context/FleetContext';
@@ -54,7 +54,7 @@ function injectSpinStyle() {
    ════════════════════════════════════════════════════════════ */
 
 /* ── LiveClock ─────────────────────────────────────────────── */
-function LiveClock() {
+const LiveClock = memo(function LiveClock() {
     const [time, setTime] = useState(new Date());
     useEffect(() => {
         const id = setInterval(() => setTime(new Date()), 1000);
@@ -72,10 +72,10 @@ function LiveClock() {
             {time.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', second: '2-digit' })}
         </span>
     );
-}
+});
 
 /* ── TrendBadge ────────────────────────────────────────────── */
-function TrendBadge({ value, suffix = '%', inverse = false }) {
+const TrendBadge = memo(function TrendBadge({ value, suffix = '%', inverse = false }) {
     if (value === null || value === undefined || value === 0 || isNaN(value)) return null;
     const isPositive = inverse ? value < 0 : value > 0;
     return (
@@ -89,10 +89,10 @@ function TrendBadge({ value, suffix = '%', inverse = false }) {
             {isPositive ? <TrendingUp size={10} /> : <TrendingDown size={10} />} {Math.abs(value)}{suffix}
         </span>
     );
-}
+});
 
 /* ── PulseDot ──────────────────────────────────────────────── */
-function PulseDot({ color = 'var(--green-t)' }) {
+const PulseDot = memo(function PulseDot({ color = 'var(--green-t)' }) {
     return (
         <span style={{
             display: 'inline-block', width: 6, height: 6,
@@ -102,10 +102,10 @@ function PulseDot({ color = 'var(--green-t)' }) {
             flexShrink: 0,
         }} />
     );
-}
+});
 
 /* ── QuickAction ───────────────────────────────────────────── */
-function QuickAction({ Icon, label, onClick, color = 'var(--accent)' }) {
+const QuickAction = memo(function QuickAction({ Icon, label, onClick, color = 'var(--accent)' }) {
     return (
         <button
             onClick={onClick}
@@ -142,7 +142,7 @@ function QuickAction({ Icon, label, onClick, color = 'var(--accent)' }) {
             </span>
         </button>
     );
-}
+});
 
 
 

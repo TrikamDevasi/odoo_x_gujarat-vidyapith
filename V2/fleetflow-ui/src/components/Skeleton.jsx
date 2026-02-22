@@ -1,4 +1,4 @@
-import { useEffect } from 'react';
+import { useEffect, memo } from 'react';
 
 /* ─── Constants ───────────────────────────────────────────── */
 const STYLE_ID = 'ff-skeleton-styles';
@@ -130,35 +130,35 @@ function useSkeletonStyles() {
  *   className       extra class on each bone
  *   style           extra inline styles on each bone
  */
-export default function Skeleton({
-    width          = '100%',
-    height         = '16px',
+function Skeleton({
+    width = '100%',
+    height = '16px',
     borderRadius,
-    shape          = 'rect',
-    variant        = 'shimmer',
-    count          = 1,
-    gap            = 8,
-    lastWidth      = '58%',
-    speed          = '1.4s',
-    stagger        = 0,
+    shape = 'rect',
+    variant = 'shimmer',
+    count = 1,
+    gap = 8,
+    lastWidth = '58%',
+    speed = '1.4s',
+    stagger = 0,
     baseColor,
     highlightColor,
-    className      = '',
-    style          = {},
+    className = '',
+    style = {},
 }) {
     useSkeletonStyles();
 
-    const shapeClass = shape === 'circle'  ? 'ff-sk-circle'
-                     : shape === 'rounded' ? 'ff-sk-rounded'
-                     : '';
+    const shapeClass = shape === 'circle' ? 'ff-sk-circle'
+        : shape === 'rounded' ? 'ff-sk-rounded'
+            : '';
 
     const cls = `ff-sk ff-sk-${variant} ${shapeClass} ${className}`.trim();
 
     /* CSS variable overrides passed inline */
     const cssVars = {
         '--ff-sk-speed': speed,
-        ...(baseColor      ? { '--ff-sk-base':      baseColor      } : {}),
-        ...(highlightColor ? { '--ff-sk-highlight':  highlightColor } : {}),
+        ...(baseColor ? { '--ff-sk-base': baseColor } : {}),
+        ...(highlightColor ? { '--ff-sk-highlight': highlightColor } : {}),
     };
 
     const boneStyle = {
@@ -210,13 +210,13 @@ export default function Skeleton({
  *   variant                                (default 'shimmer')
  */
 Skeleton.AvatarRow = function SkeletonAvatarRow({
-    size        = 38,
-    lines       = 2,
+    size = 38,
+    lines = 2,
     lineHeights = ['14px', '11px'],
-    lineWidths  = ['70%', '42%'],
-    gap         = 10,
-    lineGap     = 7,
-    variant     = 'shimmer',
+    lineWidths = ['70%', '42%'],
+    gap = 10,
+    lineGap = 7,
+    variant = 'shimmer',
 }) {
     useSkeletonStyles();
     return (
@@ -250,13 +250,13 @@ Skeleton.AvatarRow = function SkeletonAvatarRow({
  *   variant                               (default 'shimmer')
  */
 Skeleton.Card = function SkeletonCard({
-    showThumb    = true,
-    thumbHeight  = '120px',
+    showThumb = true,
+    thumbHeight = '120px',
     headerHeight = '16px',
-    lines        = 3,
-    lineHeight   = '12px',
-    gap          = 10,
-    variant      = 'shimmer',
+    lines = 3,
+    lineHeight = '12px',
+    gap = 10,
+    variant = 'shimmer',
 }) {
     useSkeletonStyles();
     return (
@@ -276,7 +276,7 @@ Skeleton.Card = function SkeletonCard({
                     key={i}
                     className={`ff-sk ff-sk-${variant}`}
                     style={{
-                        width:  i === lines - 1 ? '52%' : '100%',
+                        width: i === lines - 1 ? '52%' : '100%',
                         height: lineHeight,
                     }}
                 />
@@ -297,13 +297,13 @@ Skeleton.Card = function SkeletonCard({
  *   variant                                (default 'shimmer')
  */
 Skeleton.Table = function SkeletonTable({
-    rows      = 5,
-    cols      = 4,
+    rows = 5,
+    cols = 4,
     rowHeight = '40px',
-    colGap    = 12,
-    rowGap    = 6,
-    stagger   = 35,
-    variant   = 'shimmer',
+    colGap = 12,
+    rowGap = 6,
+    stagger = 35,
+    variant = 'shimmer',
 }) {
     useSkeletonStyles();
 
@@ -362,7 +362,7 @@ Skeleton.Stat = function SkeletonStat({ variant = 'shimmer' }) {
         <div className="ff-sk-c-card" style={{ gap: 10, minWidth: 140 }} aria-hidden="true">
             {/* Icon + label row */}
             <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
-                <span className={`ff-sk ff-sk-${variant}`}       style={{ width: '48%', height: '10px' }} />
+                <span className={`ff-sk ff-sk-${variant}`} style={{ width: '48%', height: '10px' }} />
                 <span className={`ff-sk ff-sk-${variant} ff-sk-circle`} style={{ width: 28, height: 28 }} />
             </div>
             {/* Big metric */}
@@ -384,18 +384,18 @@ Skeleton.TripCard = function SkeletonTripCard({ variant = 'shimmer' }) {
         <div className="ff-sk-c-card" style={{ gap: 9 }} aria-hidden="true">
             {/* Reference + status */}
             <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 8 }}>
-                <span className={`ff-sk ff-sk-${variant}`}            style={{ width: '48%', height: '13px' }} />
+                <span className={`ff-sk ff-sk-${variant}`} style={{ width: '48%', height: '13px' }} />
                 <span className={`ff-sk ff-sk-${variant} ff-sk-rounded`} style={{ width: '22%', height: '20px' }} />
             </div>
             {/* Origin row */}
             <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
                 <span className={`ff-sk ff-sk-${variant} ff-sk-circle`} style={{ width: 22, height: 22 }} />
-                <span className={`ff-sk ff-sk-${variant}`}              style={{ width: '62%', height: '11px' }} />
+                <span className={`ff-sk ff-sk-${variant}`} style={{ width: '62%', height: '11px' }} />
             </div>
             {/* Destination row */}
             <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
                 <span className={`ff-sk ff-sk-${variant} ff-sk-circle`} style={{ width: 22, height: 22 }} />
-                <span className={`ff-sk ff-sk-${variant}`}              style={{ width: '50%', height: '11px' }} />
+                <span className={`ff-sk ff-sk-${variant}`} style={{ width: '50%', height: '11px' }} />
             </div>
             {/* Tag chips */}
             <div style={{ display: 'flex', gap: 6 }}>
@@ -406,3 +406,6 @@ Skeleton.TripCard = function SkeletonTripCard({ variant = 'shimmer' }) {
         </div>
     );
 };
+
+Skeleton.displayName = 'Skeleton';
+export default memo(Skeleton);
