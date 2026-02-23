@@ -200,7 +200,6 @@ export default function Maintenance() {
         () => maintenance.filter(m => m.status === 'done').length,
         [maintenance]
     );
-    const avgCost = maintenance.length ? Math.round(totalCost / maintenance.length) : 0;
 
     /* ── Animated KPIs ──────────────────────────────────────── */
     const animSched = useCountUp(scheduledCount, { delay: 0, easing: 'ease-out-expo' });
