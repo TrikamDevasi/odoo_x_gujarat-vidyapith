@@ -1,4 +1,4 @@
-import { Children, useCallback, useEffect, useRef, useState } from 'react';
+import { Children, useCallback, useEffect, useRef, useState, useMemo } from 'react';
 
 /* ─── Constants ───────────────────────────────────────────── */
 const STYLE_ID = 'ff-al-styles';
@@ -421,12 +421,3 @@ export default function AnimatedList({
     );
 }
 
-/* ─── useMemo for activeIdx ───────────────────────────────────
-   (hoisted import to fix lint warning — used inside component)  */
-function useMemo(fn, deps) {
-    const ref = useRef({ deps: undefined, value: undefined });
-    const prevDeps = ref.current.deps;
-    const changed = !prevDeps || deps.some((d, i) => d !== prevDeps[i]);
-    if (changed) ref.current = { deps, value: fn() };
-    return ref.current.value;
-}

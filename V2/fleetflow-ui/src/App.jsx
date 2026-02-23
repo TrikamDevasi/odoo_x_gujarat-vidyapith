@@ -57,7 +57,9 @@ const AppShell = memo(function AppShell({ user, onLogout, theme, toggleTheme, on
 
   // Close mobile menu on route change
   useEffect(() => {
-    setMobileMenuOpen(false);
+    if (mobileMenuOpen) {
+      setMobileMenuOpen(false);
+    }
   }, [location.pathname]);
 
   return (
@@ -108,13 +110,14 @@ const AppShell = memo(function AppShell({ user, onLogout, theme, toggleTheme, on
 
               {/* Theme toggle */}
               <button
+                className="theme-toggle-btn"
                 onClick={toggleTheme}
                 aria-label={theme === 'dark' ? 'Switch to Light Mode' : 'Switch to Dark Mode'}
               >
-                <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-                  {theme === 'dark' ? <Sun size={13} strokeWidth={2.5} aria-hidden="true" /> : <Moon size={13} strokeWidth={2.5} aria-hidden="true" />}
-                </div>
-                <span className="desktop-only" style={{ fontSize: 11, fontWeight: 700, flex: 1, textAlign: 'left', marginLeft: 2 }}>
+                <span className="theme-toggle-icon" key={theme}>
+                  {theme === 'dark' ? <Sun size={14} strokeWidth={2.5} aria-hidden="true" /> : <Moon size={14} strokeWidth={2.5} aria-hidden="true" />}
+                </span>
+                <span className="desktop-only" style={{ fontSize: 11, fontWeight: 700, textAlign: 'left' }}>
                   {theme === 'dark' ? 'Light' : 'Dark'}
                 </span>
               </button>
