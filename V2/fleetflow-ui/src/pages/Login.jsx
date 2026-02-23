@@ -394,7 +394,7 @@ export default function Login({ onLogin }) {
                                 Select Your Role
                             </div>
                             <div
-                                className="login-demo-grid"
+                                className="login-demo-grid stagger-grid"
                                 role="radiogroup"
                                 aria-label="Select role"
                             >
@@ -472,7 +472,7 @@ export default function Login({ onLogin }) {
                             ⚡ Quick Demo Access
                         </div>
 
-                        <div className="login-demo-grid">
+                        <div className="login-demo-grid stagger-grid">
                             {DEMO_ACCOUNTS.map(a => {
                                 const isActive = filledDemo === a.role;
                                 return (

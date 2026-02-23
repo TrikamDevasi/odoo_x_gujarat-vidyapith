@@ -80,15 +80,37 @@ const CSS = `
     65%  { transform: scale(1.2); opacity: 1; }
     100% { transform: scale(1);   opacity: 1; }
 }
+@keyframes pulse {
+    0% { box-shadow: 0 0 0 0 rgba(59,130,246,0.6); }
+    70% { box-shadow: 0 0 0 15px rgba(59,130,246,0); }
+    100% { box-shadow: 0 0 0 0 rgba(59,130,246,0); }
+}
+@keyframes soft-neon-pulse {
+    0%, 100% { box-shadow: 0 0 20px rgba(59,130,246,0.4), 0 0 40px rgba(139,92,246,0.2); }
+    50% { box-shadow: 0 0 30px rgba(59,130,246,0.6), 0 0 60px rgba(139,92,246,0.4); }
+}
+@keyframes ff-sb-stagger-in {
+    from { opacity: 0; transform: translateX(-12px); }
+    to   { opacity: 1; transform: translateX(0); }
+}
+@keyframes ff-sb-fade-in {
+    from { opacity: 0; }
+    to   { opacity: 1; }
+}
+@keyframes breathe-glow {
+    0%, 100% { box-shadow: 0 4px 16px rgba(59, 130, 246, 0.3); }
+    50% { box-shadow: 0 4px 28px rgba(59, 130, 246, 0.55), 0 0 40px rgba(139, 92, 246, 0.2); }
+}
 .ff-sb {
     position: relative; height: 100%;
     display: flex; flex-direction: column;
     background: var(--bg-sidebar, var(--bg-card));
     border-right: 1px solid var(--glass-border);
     width: var(--sidebar-w, 240px);
-    transition: width 0.3s cubic-bezier(0.4, 0, 0.2, 1), transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    transition: width 0.45s cubic-bezier(0.4, 0, 0.2, 1), transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
     flex-shrink: 0; user-select: none;
     z-index: 100;
+    animation: ff-sb-fade-in 0.5s ease-out;
 }
 .ff-sb.ff-sb-collapsed { width: 64px; }
 
@@ -131,12 +153,17 @@ const CSS = `
     background: linear-gradient(135deg, #3b82f6, #8b5cf6);
     display: flex; align-items: center; justify-content: center;
     box-shadow: 0 0 18px rgba(59,130,246,0.42), 0 0 0 1px rgba(99,102,241,0.2);
-    transition: box-shadow 0.2s ease;
+    transition: box-shadow 0.3s ease, transform 0.3s var(--bounce, cubic-bezier(0.34, 1.56, 0.64, 1));
+    animation: breathe-glow 3s ease-in-out infinite, pulse 2s infinite;
 }
-.ff-sb-logo-mark:hover { box-shadow: 0 0 24px rgba(59,130,246,0.55), 0 0 0 1px rgba(99,102,241,0.3); }
+.ff-sb-logo-mark:hover {
+    box-shadow: 0 0 28px rgba(59,130,246,0.65), 0 0 0 1px rgba(99,102,241,0.35);
+    transform: scale(1.08);
+    animation: soft-neon-pulse 2s ease-in-out infinite;
+}
 .ff-sb-logo-words {
     overflow: hidden; flex: 1; min-width: 0;
-    transition: opacity 0.18s ease; white-space: nowrap;
+    transition: opacity 0.3s cubic-bezier(0.4, 0, 0.2, 1); white-space: nowrap;
 }
 .ff-sb-collapsed .ff-sb-logo-words { opacity: 0; pointer-events: none; }
 .ff-sb-logo-name {
@@ -165,7 +192,7 @@ const CSS = `
 .ff-sb-nav::-webkit-scrollbar-thumb { background: var(--border); border-radius: 2px; }
 .ff-sb-divider {
     height: 1px; background: var(--glass-border);
-    margin: 6px 12px; opacity: 0; transition: opacity 0.18s ease;
+    margin: 6px 12px; opacity: 0; transition: opacity 0.3s cubic-bezier(0.4, 0, 0.2, 1);
 }
 .ff-sb-collapsed .ff-sb-divider { opacity: 1; }
 .ff-sb-section-hd {
@@ -207,10 +234,14 @@ const CSS = `
     background: transparent; cursor: pointer; text-align: left;
     color: var(--text-muted); font-size: 13px; font-weight: 500;
     font-family: var(--font-body);
-    transition: background 0.1s ease, color 0.1s ease;
+    transition: background 0.15s ease, color 0.1s ease, transform 0.2s var(--spring);
     white-space: nowrap; overflow: hidden;
 }
-.ff-sb-link:hover { background: var(--bg-hover); color: var(--text-secondary); }
+.ff-sb-link:hover { 
+    background: linear-gradient(90deg, var(--bg-hover) 0%, transparent 100%); 
+    color: var(--text-primary); 
+    transform: translateX(4px);
+}
 .ff-sb-link:focus-visible { outline: 2px solid var(--accent); outline-offset: -2px; }
 .ff-sb-link.active {
     background: var(--accent-glow); color: var(--text-primary); font-weight: 700;
@@ -223,7 +254,10 @@ const CSS = `
 }
 .ff-sb-link.active::before { 
     background: var(--accent); 
-    width: 2px;
+    width: 3px;
+    height: 18px;
+    top: 50%;
+    transform: translateY(-50%);
 }
 .ff-sb-icon {
     width: 28px; height: 28px; border-radius: 8px; flex-shrink: 0;
@@ -234,7 +268,7 @@ const CSS = `
     background: var(--ff-sb-icon-bg);
     box-shadow: 0 0 0 1px var(--ff-sb-icon-border);
 }
-.ff-sb-link-label { flex: 1; transition: opacity 0.18s ease; overflow: hidden; text-overflow: ellipsis; }
+.ff-sb-link-label { flex: 1; transition: opacity 0.3s cubic-bezier(0.4, 0, 0.2, 1); overflow: hidden; text-overflow: ellipsis; }
 .ff-sb-collapsed .ff-sb-link-label { opacity: 0; }
 .ff-sb-link-badge {
     min-width: 18px; height: 18px; border-radius: 9px; flex-shrink: 0;
@@ -244,7 +278,7 @@ const CSS = `
     display: flex; align-items: center; justify-content: center;
     padding: 0 5px; line-height: 1; font-variant-numeric: tabular-nums;
     animation: ff-sb-badge-pop 0.3s cubic-bezier(0.16,1,0.3,1) both;
-    transition: opacity 0.18s ease;
+    transition: opacity 0.3s cubic-bezier(0.4, 0, 0.2, 1);
 }
 .ff-sb-collapsed .ff-sb-link-badge { opacity: 0; }
 .ff-sb-tip {
@@ -312,7 +346,7 @@ const CSS = `
     width: 28px; height: 28px; border-radius: 7px; flex-shrink: 0;
     display: flex; align-items: center; justify-content: center;
     background: none; border: none; cursor: pointer; color: var(--text-muted);
-    transition: background 0.15s ease, color 0.15s ease, opacity 0.18s ease;
+    transition: background 0.15s ease, color 0.15s ease, opacity 0.3s cubic-bezier(0.4, 0, 0.2, 1);
 }
 .ff-sb-logout:hover { background: rgba(239,68,68,0.1); color: #ef4444; }
 .ff-sb-logout:focus-visible { outline: 2px solid #ef4444; outline-offset: 2px; }
@@ -497,7 +531,7 @@ export default function Sidebar({ user, onLogout, onShowHelp, badges = {}, isMob
                                     aria-hidden={isSectionClosed || undefined}
                                 >
                                     <div className="ff-sb-section-items-inner">
-                                        {items.map(item => {
+                                        {items.map((item, ii) => {
                                             /* FIX #2: exact match OR /sub-path, not raw startsWith */
                                             const active = isRouteActive(location.pathname, item.path);
                                             const count = badges[item.path];
@@ -514,6 +548,8 @@ export default function Sidebar({ user, onLogout, onShowHelp, badges = {}, isMob
                                                     style={{
                                                         '--ff-sb-icon-bg': `${item.color}22`,
                                                         '--ff-sb-icon-border': `${item.color}36`,
+                                                        animation: collapsed ? 'none' : 'ff-sb-stagger-in 0.35s var(--spring) backwards',
+                                                        animationDelay: `${(si * items.length + ii) * 40}ms`
                                                     }}
                                                 >
                                                     <div className="ff-sb-icon" aria-hidden="true">
